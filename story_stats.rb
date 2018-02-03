@@ -42,11 +42,14 @@ print "Fetching Stories ..."
 stories = git.branches.each_with_object([]) do |branch, memo|
   next unless branch.name =~ /(\d{9})$/
   id = $1;
-
+  begin
   story = project.story(id)
   memo << StoryStatus.new(id,
                           story.current_state, story.name, story.owners.map(&:name),
                           branch.name, branch.gcommit.sha)
+  rescue
+    puts "Failed to get the story for #{id} #{branch.name}"
+  end
   print "."
 end
 
